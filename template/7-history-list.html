@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>奇门遁甲 - 历史记录列表页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #e5e5e5;
+            padding: 40px 20px;
+        }
+
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .size-info {
+            flex-shrink: 0;
+            width: 280px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 40px;
+        }
+
+        .size-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .size-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .size-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .size-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .warning-box p {
+            font-size: 13px;
+            color: #856404;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #856404;
+        }
+
+        .phone-frame {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .height-marker {
+            position: absolute;
+            right: -30px;
+            top: 0;
+            width: 20px;
+            height: 667px;
+            border-right: 3px dashed #ff6b6b;
+            pointer-events: none;
+        }
+
+        .height-marker::after {
+            content: '标准高度 667px';
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 100%;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: white;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .navbar::after {
+            content: '44px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .back-btn {
+            font-size: 18px;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .nav-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 17px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .content {
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .record-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+            min-height: 100px;
+        }
+
+        .record-card::after {
+            content: '112px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .record-time {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .record-info {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .record-fortune {
+            font-size: 13px;
+            color: #ffd700;
+            margin-bottom: 12px;
+        }
+
+        .record-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            flex: 1;
+            height: 32px;
+            border: none;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: white;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            position: relative;
+        }
+
+        .empty-state::after {
+            content: '240px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .empty-text {
+            font-size: 15px;
+            color: #999;
+            margin-bottom: 30px;
+        }
+
+        .empty-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="size-info">
+            <h3>📐 页面尺寸规格</h3>
+            
+            <div class="size-item">
+                <span class="size-label">页面名称：</span>
+                <span class="size-value">历史记录列表页</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">标准宽度：</span>
+                <span class="size-value">375px (750rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">标准高度：</span>
+                <span class="size-value">667px (1334rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">实际内容高度：</span>
+                <span class="size-value">719px</span>
+            </div>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+            <h3 style="margin-top: 20px;">📏 各区域高度明细</h3>
+            
+            <div class="size-item">
+                <span class="size-label">导航栏（固定）：</span>
+                <span class="size-value">44px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">顶部留白：</span>
+                <span class="size-value">15px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">记录卡片1+间距：</span>
+                <span class="size-value">112px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">记录卡片2+间距：</span>
+                <span class="size-value">112px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">记录卡片3+间距：</span>
+                <span class="size-value">112px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">记录卡片4+间距：</span>
+                <span class="size-value">112px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">记录卡片5+间距：</span>
+                <span class="size-value">112px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">底部留白：</span>
+                <span class="size-value">100px</span>
+            </div>
+            
+            <div class="size-item" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                <span class="size-label">总计：</span>
+                <span class="size-value">44+15+112×5+100 = 719px</span>
+            </div>
+
+            <div class="warning-box">
+                <p class="warning-title">⚠️ 高度说明</p>
+                <p>实际内容高度 <strong>719px</strong> 超过标准高度 <strong>667px</strong>（超出52px）。实际开发时，导航栏固定在顶部，内容区域可滚动查看所有记录，支持上拉加载更多。</p>
+            </div>
+
+            <div class="warning-box" style="margin-top: 15px; background: #e7f3ff; border-left-color: #409eff;">
+                <p class="warning-title" style="color: #409eff;">💡 空状态说明</p>
+                <p style="color: #409eff;">当无历史记录时，显示空状态页面（高度约240px），此时总高度为 44+240 = 284px，小于标准高度。</p>
+            </div>
+        </div>
+
+        <div class="phone-frame">
+            <div class="height-marker"></div>
+            
+            <div class="container">
+                <div class="navbar">
+                    <span class="back-btn">‹ 返回</span>
+                    <span class="nav-title">历史记录</span>
+                </div>
+
+                <div class="content">
+                    <div class="record-card">
+                        <div class="record-time">📅 2024-01-01 23:00</div>
+                        <div class="record-info">👤 男 | 🔮 时家奇门</div>
+                        <div class="record-fortune">运势：★★★★☆ 4.0分</div>
+                        <div class="record-actions">
+                            <button class="btn-small btn-view">查看详情</button>
+                            <button class="btn-small btn-delete">删除</button>
+                        </div>
+                    </div>
+
+                    <div class="record-card">
+                        <div class="record-time">📅 2024-01-02 12:00</div>
+                        <div class="record-info">👤 女 | 🔮 时家奇门</div>
+                        <div class="record-fortune">运势：★★★☆☆ 3.0分</div>
+                        <div class="record-actions">
+                            <button class="btn-small btn-view">查看详情</button>
+                            <button class="btn-small btn-delete">删除</button>
+                        </div>
+                    </div>
+
+                    <div class="record-card">
+                        <div class="record-time">📅 2024-01-03 08:30</div>
+                        <div class="record-info">👤 男 | 🔮 时家奇门</div>
+                        <div class="record-fortune">运势：★★★★★ 5.0分</div>
+                        <div class="record-actions">
+                            <button class="btn-small btn-view">查看详情</button>
+                            <button class="btn-small btn-delete">删除</button>
+                        </div>
+                    </div>
+
+                    <div class="record-card">
+                        <div class="record-time">📅 2024-01-04 15:45</div>
+                        <div class="record-info">👤 女 | 🔮 时家奇门</div>
+                        <div class="record-fortune">运势：★★☆☆☆ 2.0分</div>
+                        <div class="record-actions">
+                            <button class="btn-small btn-view">查看详情</button>
+                            <button class="btn-small btn-delete">删除</button>
+                        </div>
+                    </div>
+
+                    <div class="record-card">
+                        <div class="record-time">📅 2024-01-05 20:15</div>
+                        <div class="record-info">👤 男 | 🔮 时家奇门</div>
+                        <div class="record-fortune">运势：★★★★☆ 4.5分</div>
+                        <div class="record-actions">
+                            <button class="btn-small btn-view">查看详情</button>
+                            <button class="btn-small btn-delete">删除</button>
+                        </div>
+                    </div>
+
+                    <!-- 空状态示例（注释掉，实际使用时二选一）
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div class="empty-text">暂无历史记录</div>
+                        <a href="#" class="empty-btn">立即起盘</a>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

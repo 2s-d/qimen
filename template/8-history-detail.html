@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>奇门遁甲 - 历史记录详情页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #e5e5e5;
+            padding: 40px 20px;
+        }
+
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .size-info {
+            flex-shrink: 0;
+            width: 280px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 40px;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .size-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .size-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .size-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .size-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .warning-box p {
+            font-size: 13px;
+            color: #856404;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #856404;
+        }
+
+        .phone-frame {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .height-marker {
+            position: absolute;
+            right: -30px;
+            top: 0;
+            width: 20px;
+            height: 667px;
+            border-right: 3px dashed #ff6b6b;
+            pointer-events: none;
+        }
+
+        .height-marker::after {
+            content: '标准高度 667px';
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 100%;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: white;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .navbar::after {
+            content: '44px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .back-btn {
+            font-size: 18px;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .nav-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 17px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .content {
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .info-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.6;
+            position: relative;
+            height: 50px;
+        }
+
+        .info-bar::after {
+            content: '65px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .plate-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            position: relative;
+            height: 360px;
+        }
+
+        .plate-container::after {
+            content: '375px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .plate-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            aspect-ratio: 1;
+        }
+
+        .palace {
+            background: #f8f8f8;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .palace.highlight {
+            border-color: #ffd700;
+            background: #fffef0;
+        }
+
+        .palace-position {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .palace-star {
+            color: #667eea;
+            font-size: 10px;
+        }
+
+        .palace-door {
+            color: #e74c3c;
+            font-size: 10px;
+        }
+
+        .palace-god {
+            color: #27ae60;
+            font-size: 10px;
+        }
+
+        .result-section {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            min-height: 200px;
+        }
+
+        .result-section::after {
+            content: '215px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .fortune-item {
+            margin-bottom: 12px;
+        }
+
+        .fortune-name {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .fortune-stars {
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            position: relative;
+            height: 44px;
+        }
+
+        .action-buttons::after {
+            content: '60px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .btn {
+            flex: 1;
+            height: 44px;
+            border: none;
+            border-radius: 22px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: white;
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="size-info">
+            <h3>📐 页面尺寸规格</h3>
+            
+            <div class="size-item">
+                <span class="size-label">页面名称：</span>
+                <span class="size-value">历史记录详情页</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">标准宽度：</span>
+                <span class="size-value">375px (750rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">标准高度：</span>
+                <span class="size-value">667px (1334rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">实际内容高度：</span>
+                <span class="size-value">849px</span>
+            </div>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+            <h3 style="margin-top: 20px;">📏 各区域高度明细</h3>
+            
+            <div class="size-item">
+                <span class="size-label">导航栏（固定）：</span>
+                <span class="size-value">44px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">顶部留白：</span>
+                <span class="size-value">15px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">起盘信息栏+间距：</span>
+                <span class="size-value">65px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">九宫格盘面+间距：</span>
+                <span class="size-value">375px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">解读结果区域+间距：</span>
+                <span class="size-value">215px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">操作按钮+间距：</span>
+                <span class="size-value">60px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">底部留白：</span>
+                <span class="size-value">75px</span>
+            </div>
+            
+            <div class="size-item" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                <span class="size-label">总计：</span>
+                <span class="size-value">44+15+65+375+215+60+75 = 849px</span>
+            </div>
+
+            <div class="warning-box">
+                <p class="warning-title">⚠️ 高度说明</p>
+                <p>实际内容高度 <strong>849px</strong> 超过标准高度 <strong>667px</strong>（超出182px）。实际开发时，导航栏固定在顶部，内容区域可滚动查看完整的盘面和解读结果。</p>
+            </div>
+        </div>
+
+        <div class="phone-frame">
+            <div class="height-marker"></div>
+            
+            <div class="container">
+                <div class="navbar">
+                    <span class="back-btn">‹ 返回</span>
+                    <span class="nav-title">历史详情</span>
+                </div>
+
+                <div class="content">
+                    <div class="info-bar">
+                        📅 2024年1月1日 23:00<br>
+                        👤 男 | 🔮 时家奇门
+                    </div>
+
+                    <div class="plate-container">
+                        <div class="plate-grid">
+                            <div class="palace">
+                                <div class="palace-position">巽4</div>
+                                <div class="palace-star">天辅星</div>
+                                <div class="palace-door">杜门</div>
+                                <div class="palace-god">腾蛇</div>
+                            </div>
+                            <div class="palace">
+                                <div class="palace-position">离9</div>
+                                <div class="palace-star">天禽星</div>
+                                <div class="palace-door">景门</div>
+                                <div class="palace-god">太阴</div>
+                            </div>
+                            <div class="palace">
+                                <div class="palace-position">坤2</div>
+                                <div class="palace-star">天芮星</div>
+                                <div class="palace-door">死门</div>
+                                <div class="palace-god">六合</div>
+                            </div>
+                            <div class="palace">
+                                <div class="palace-position">震3</div>
+                                <div class="palace-star">天冲星</div>
+                                <div class="palace-door">伤门</div>
+                                <div class="palace-god">白虎</div>
+                            </div>
+                            <div class="palace highlight">
+                                <div class="palace-position">中5</div>
+                                <div class="palace-star">天心星</div>
+                                <div class="palace-door">休门</div>
+                                <div class="palace-god">玄武</div>
+                            </div>
+                            <div class="palace">
+                                <div class="palace-position">兑7</div>
+                                <div class="palace-star">天柱星</div>
+                                <div class="palace-door">惊门</div>
+                                <div class="palace-god">九地</div>
+                            </div>
+                            <div class="palace">
+                                <div class="palace-position">艮8</div>
+                                <div class="palace-star">天英星</div>
+                                <div class="palace-door">生门</div>
+                                <div class="palace-god">九天</div>
+                            </div>
+                            <div class="palace highlight">
+                                <div class="palace-position">坎1</div>
+                                <div class="palace-star">天蓬星</div>
+                                <div class="palace-door">开门</div>
+                                <div class="palace-god">值符</div>
+                            </div>
+                            <div class="palace">
+                                <div class="palace-position">乾6</div>
+                                <div class="palace-star">天任星</div>
+                                <div class="palace-door">杜门</div>
+                                <div class="palace-god">朱雀</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="section-title">运势解读</div>
+                        <div class="fortune-item">
+                            <div class="fortune-name">总体运势</div>
+                            <div class="fortune-stars">★★★★☆ 4.0分</div>
+                        </div>
+                        <div class="fortune-item">
+                            <div class="fortune-name">💼 事业运</div>
+                            <div class="fortune-stars">★★★★☆</div>
+                        </div>
+                        <div class="fortune-item">
+                            <div class="fortune-name">💰 财运</div>
+                            <div class="fortune-stars">★★★☆☆</div>
+                        </div>
+                        <div class="fortune-item">
+                            <div class="fortune-name">💕 感情运</div>
+                            <div class="fortune-stars">★★★★★</div>
+                        </div>
+                        <div class="fortune-item">
+                            <div class="fortune-name">🏥 健康运</div>
+                            <div class="fortune-stars">★★★☆☆</div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary">重新起盘</button>
+                        <button class="btn btn-danger">删除记录</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

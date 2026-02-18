@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>奇门遁甲算命小程序 - 首页原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #e5e5e5;
+            padding: 40px 20px;
+        }
+
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        /* 尺寸标注区域 */
+        .size-info {
+            flex-shrink: 0;
+            width: 280px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 40px;
+        }
+
+        .size-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .size-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .size-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .size-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .warning-box p {
+            font-size: 13px;
+            color: #856404;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #856404;
+        }
+
+        /* 手机框架 */
+        .phone-frame {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 标准高度参考线 */
+        .height-marker {
+            position: absolute;
+            right: -30px;
+            top: 0;
+            width: 20px;
+            height: 667px;
+            border-right: 3px dashed #ff6b6b;
+            pointer-events: none;
+        }
+
+        .height-marker::after {
+            content: '标准高度 667px';
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        /* 主容器 */
+        .container {
+            width: 100%;
+            background: #f5f5f5;
+            position: relative;
+        }
+
+        /* 顶部区域 - 60px (120rpx) */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            height: 60px;
+            position: relative;
+        }
+
+        .header::after {
+            content: '60px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* 轮播图区域 - 150px (300rpx) */
+        .banner {
+            height: 150px;
+            background: #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::after {
+            content: '150px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            z-index: 10;
+        }
+
+        .banner-item {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .banner-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+        }
+
+        .indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+        }
+
+        .indicator.active {
+            background: white;
+            width: 16px;
+            border-radius: 3px;
+        }
+
+        /* 今日运势卡片 - 约100px (200rpx) */
+        .fortune-card {
+            margin: 15px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .fortune-card::after {
+            content: '~100px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .fortune-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .fortune-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        .fortune-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .fortune-rating {
+            color: #ffd700;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .fortune-desc {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .fortune-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* 功能宫格 */
+        .function-grid {
+            margin: 0 15px 15px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .function-grid::after {
+            content: '~180px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            padding: 10px 0;
+        }
+
+        .grid-item:active {
+            transform: scale(0.95);
+        }
+
+        .grid-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .grid-label {
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* 公告滚动 - 40px (80rpx) */
+        .announcement {
+            margin: 0 15px 15px;
+            background: #fff3cd;
+            border-radius: 6px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            height: 40px;
+            position: relative;
+        }
+
+        .announcement::after {
+            content: '40px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .announcement-icon {
+            font-size: 16px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .announcement-text {
+            font-size: 13px;
+            color: #856404;
+            white-space: nowrap;
+        }
+
+        /* 底部TabBar - 50px (100rpx) */
+        .tabbar {
+            height: 50px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid #f0f0f0;
+            position: relative;
+        }
+
+        .tabbar::after {
+            content: '50px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex: 1;
+            height: 100%;
+        }
+
+        .tab-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        .tab-label {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .tab-item.active .tab-icon {
+            color: #667eea;
+        }
+
+        .tab-item.active .tab-label {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <!-- 尺寸标注区域 -->
+        <div class="size-info">
+            <h3>📐 页面尺寸规格</h3>
+            
+            <div class="size-item">
+                <span class="size-label">标准宽度：</span>
+                <span class="size-value">375px (750rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">标准高度：</span>
+                <span class="size-value">667px (1334rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">实际内容高度：</span>
+                <span class="size-value">~545px</span>
+            </div>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+            <h3 style="margin-top: 20px;">📏 各区域高度</h3>
+            
+            <div class="size-item">
+                <span class="size-label">顶部区域：</span>
+                <span class="size-value">60px (120rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">轮播图：</span>
+                <span class="size-value">150px (300rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">今日运势卡片：</span>
+                <span class="size-value">~100px (200rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">功能宫格：</span>
+                <span class="size-value">~180px (360rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">公告滚动：</span>
+                <span class="size-value">40px (80rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">底部TabBar：</span>
+                <span class="size-value">50px (100rpx)</span>
+            </div>
+
+            <div class="warning-box">
+                <p class="warning-title">⚠️ 重要说明</p>
+                <p>为展示所有内容，当前原型高度超过标准高度。实际开发时，内容区域将可滚动，TabBar固定在底部，总高度严格控制在 <strong>667px</strong>。</p>
+            </div>
+        </div>
+
+        <!-- 手机原型 -->
+        <div class="phone-frame">
+            <div class="height-marker"></div>
+            
+            <div class="container">
+                <!-- 顶部区域 -->
+                <div class="header">
+                    <div class="logo">🔮</div>
+                    <div class="app-title">奇门遁甲</div>
+                </div>
+
+                <!-- 轮播图区域 -->
+                <div class="banner">
+                    <div class="banner-item">
+                        Banner 1
+                    </div>
+                    <div class="banner-indicators">
+                        <div class="indicator active"></div>
+                        <div class="indicator"></div>
+                        <div class="indicator"></div>
+                    </div>
+                </div>
+
+                <!-- 今日运势卡片 -->
+                <div class="fortune-card">
+                    <div class="fortune-header">
+                        <span class="fortune-icon">📅</span>
+                        <span class="fortune-title">今日运势</span>
+                    </div>
+                    <div class="fortune-rating">★★★★☆ 4.0分</div>
+                    <div class="fortune-desc">
+                        今日运势良好，适合开展新项目，贵人相助...
+                    </div>
+                    <button class="fortune-btn">
+                        查看详情 →
+                    </button>
+                </div>
+
+                <!-- 功能宫格 -->
+                <div class="function-grid">
+                    <div class="grid-container">
+                        <div class="grid-item">
+                            <div class="grid-icon">🔮</div>
+                            <div class="grid-label">起盘</div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-icon">📜</div>
+                            <div class="grid-label">历史</div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-icon">📚</div>
+                            <div class="grid-label">知识</div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-icon">📅</div>
+                            <div class="grid-label">万年历</div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-icon">ℹ️</div>
+                            <div class="grid-label">关于</div>
+                        </div>
+                        <div class="grid-item">
+                            <div class="grid-icon">⚙️</div>
+                            <div class="grid-label">更多</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 公告滚动 -->
+                <div class="announcement">
+                    <span class="announcement-icon">📢</span>
+                    <div class="announcement-text">
+                        欢迎使用奇门遁甲算命小程序，祝您好运连连！
+                    </div>
+                </div>
+
+                <!-- 底部TabBar -->
+                <div class="tabbar">
+                    <div class="tab-item active">
+                        <div class="tab-icon">🏠</div>
+                        <div class="tab-label">首页</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">🔮</div>
+                        <div class="tab-label">起盘</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">📜</div>
+                        <div class="tab-label">历史</div>
+                    </div>
+                    <div class="tab-item">
+                        <div class="tab-icon">👤</div>
+                        <div class="tab-label">我的</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

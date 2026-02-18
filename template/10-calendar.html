@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>奇门遁甲 - 万年历页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #e5e5e5;
+            padding: 40px 20px;
+        }
+
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .size-info {
+            flex-shrink: 0;
+            width: 280px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 40px;
+        }
+
+        .size-info h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .size-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .size-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .size-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .warning-box p {
+            font-size: 13px;
+            color: #856404;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #856404;
+        }
+
+        .phone-frame {
+            width: 375px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .height-marker {
+            position: absolute;
+            right: -30px;
+            top: 0;
+            width: 20px;
+            height: 667px;
+            border-right: 3px dashed #ff6b6b;
+            pointer-events: none;
+        }
+
+        .height-marker::after {
+            content: '标准高度 667px';
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 100%;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: white;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .navbar::after {
+            content: '44px';
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .back-btn {
+            font-size: 18px;
+            color: #667eea;
+            cursor: pointer;
+        }
+
+        .nav-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 17px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .content {
+            padding: 15px;
+        }
+
+        .month-selector {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            height: 50px;
+        }
+
+        .month-selector::after {
+            content: '65px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .month-arrow {
+            font-size: 20px;
+            color: #667eea;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .month-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            height: 280px;
+        }
+
+        .calendar-container::after {
+            content: '295px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            padding: 5px 0;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .day:hover {
+            background: #f0f0ff;
+        }
+
+        .day.today {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .day.selected {
+            background: #764ba2;
+            color: white;
+        }
+
+        .day.empty {
+            cursor: default;
+        }
+
+        .day.empty:hover {
+            background: transparent;
+        }
+
+        .date-detail {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            height: 140px;
+        }
+
+        .date-detail::after {
+            content: '155px';
+            position: absolute;
+            right: -35px;
+            top: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-icon {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .detail-label {
+            color: #666;
+            margin-right: 8px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <div class="size-info">
+            <h3>📐 页面尺寸规格</h3>
+            
+            <div class="size-item">
+                <span class="size-label">页面名称：</span>
+                <span class="size-value">万年历页</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">标准宽度：</span>
+                <span class="size-value">375px (750rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">标准高度：</span>
+                <span class="size-value">667px (1334rpx)</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">实际内容高度：</span>
+                <span class="size-value">574px</span>
+            </div>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+
+            <h3 style="margin-top: 20px;">📏 各区域高度明细</h3>
+            
+            <div class="size-item">
+                <span class="size-label">导航栏：</span>
+                <span class="size-value">44px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">顶部留白：</span>
+                <span class="size-value">15px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">年月选择器+间距：</span>
+                <span class="size-value">65px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">日历组件+间距：</span>
+                <span class="size-value">295px</span>
+            </div>
+            
+            <div class="size-item">
+                <span class="size-label">选中日期详情：</span>
+                <span class="size-value">155px</span>
+            </div>
+            
+            <div class="size-item" style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                <span class="size-label">总计：</span>
+                <span class="size-value">44+15+65+295+155 = 574px</span>
+            </div>
+
+            <div class="warning-box">
+                <p class="warning-title">✅ 高度说明</p>
+                <p>实际内容高度 <strong>574px</strong> 小于标准高度 <strong>667px</strong>，页面无需滚动，内容完整显示。</p>
+            </div>
+        </div>
+
+        <div class="phone-frame">
+            <div class="height-marker"></div>
+            
+            <div class="container">
+                <div class="navbar">
+                    <span class="back-btn">‹ 返回</span>
+                    <span class="nav-title">万年历</span>
+                </div>
+
+                <div class="content">
+                    <div class="month-selector">
+                        <span class="month-arrow">‹</span>
+                        <span class="month-text">2024年1月</span>
+                        <span class="month-arrow">›</span>
+                    </div>
+
+                    <div class="calendar-container">
+                        <div class="weekdays">
+                            <div class="weekday">日</div>
+                            <div class="weekday">一</div>
+                            <div class="weekday">二</div>
+                            <div class="weekday">三</div>
+                            <div class="weekday">四</div>
+                            <div class="weekday">五</div>
+                            <div class="weekday">六</div>
+                        </div>
+                        <div class="days">
+                            <div class="day empty"></div>
+                            <div class="day">1</div>
+                            <div class="day">2</div>
+                            <div class="day">3</div>
+                            <div class="day">4</div>
+                            <div class="day">5</div>
+                            <div class="day">6</div>
+                            <div class="day">7</div>
+                            <div class="day">8</div>
+                            <div class="day">9</div>
+                            <div class="day">10</div>
+                            <div class="day">11</div>
+                            <div class="day">12</div>
+                            <div class="day">13</div>
+                            <div class="day">14</div>
+                            <div class="day today">15</div>
+                            <div class="day">16</div>
+                            <div class="day">17</div>
+                            <div class="day">18</div>
+                            <div class="day">19</div>
+                            <div class="day">20</div>
+                            <div class="day">21</div>
+                            <div class="day">22</div>
+                            <div class="day">23</div>
+                            <div class="day">24</div>
+                            <div class="day">25</div>
+                            <div class="day">26</div>
+                            <div class="day">27</div>
+                            <div class="day">28</div>
+                            <div class="day">29</div>
+                            <div class="day">30</div>
+                            <div class="day">31</div>
+                        </div>
+                    </div>
+
+                    <div class="date-detail">
+                        <div class="detail-item">
+                            <span class="detail-icon">📅</span>
+                            <span class="detail-label">公历：</span>
+                            <span class="detail-value">2024年1月15日</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🏮</span>
+                            <span class="detail-label">农历：</span>
+                            <span class="detail-value">腊月初五</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🌿</span>
+                            <span class="detail-label">节气：</span>
+                            <span class="detail-value">小寒</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🔮</span>
+                            <span class="detail-label">干支：</span>
+                            <span class="detail-value">甲辰年 丁丑月 己巳日</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
