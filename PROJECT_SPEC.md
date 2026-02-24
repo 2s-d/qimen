@@ -14,7 +14,7 @@
 - 框架：uni-app (Vue 3 + Composition API)
 - UI库：uView Plus 3.x
 - 状态管理：Pinia
-- 开发工具：HBuilderX
+- 构建工具：Vite（uni-app Vite模式）
 - 语言：JavaScript/TypeScript（可选）
 
 【后端技术栈】
@@ -66,7 +66,7 @@
 【开发模式说明】
 > **重要**：本项目使用uni-app开发，支持多端编译。**开发阶段强烈推荐使用H5模式**，无需微信开发者工具：
 > 
-> - **H5模式（推荐）**：`npm run dev:h5` → 浏览器访问 `http://localhost:8080`
+> - **H5模式（推荐）**：`npm run dev:h5` → 浏览器访问 `http://localhost:3008`
 >   - 优点：无需额外工具，开发调试最方便，支持热重载
 >   - 适用：开发阶段的所有功能测试（登录、起盘、历史记录等）
 > 
@@ -194,7 +194,7 @@ TabBar切换：
 
 #### 2.2.2 页面2：登录页
 所属模块：用户模块
-路由路径：/pages/auth/login
+路由路径：/pages/login/index
 优先级：P0
 
 调用接口：
@@ -277,7 +277,7 @@ TabBar点击"我的"时未登录自动跳转
 
 #### 2.2.3 页面3：注册页
 所属模块：用户模块
-路由路径：/pages/auth/register
+路由路径：/pages/register/index
 优先级：P0
 
 调用接口：
@@ -363,7 +363,7 @@ POST /api/user/register - 用户注册
 
 #### 2.2.4 页面4：起盘输入页
 所属模块：算命模块
-路由路径：/pages/qimen/input
+路由路径：/pages/qimen-input/index
 优先级：P0
 
 调用接口：
@@ -487,7 +487,7 @@ MVP版本只实现时家奇门，日家奇门置灰不可选
 
 #### 2.2.5 页面5：盘面展示页
 所属模块：算命模块
-路由路径：/pages/qimen/plate
+路由路径：/pages/qimen-plate/index
 优先级：P0
 
 调用接口：
@@ -610,7 +610,7 @@ POST /api/qimen/save - 保存算命记录
 
 #### 2.2.6 页面6：解读结果页
 所属模块：算命模块
-路由路径：/pages/qimen/result
+路由路径：/pages/qimen-result/index
 优先级：P1
 
 调用接口：
@@ -713,7 +713,7 @@ GET /api/qimen/fortune?date=2024-01-01 - 获取今日运势（如果是今日运
 
 #### 2.2.7 页面7：历史记录列表页
 所属模块：算命模块
-路由路径：/pages/history/list
+路由路径：/pages/history-list/index
 优先级：P1
 
 调用接口：
@@ -803,7 +803,7 @@ DELETE /api/qimen/history/:id - 删除历史记录
 
 #### 2.2.8 页面8：历史记录详情页
 所属模块：算命模块
-路由路径：/pages/history/detail
+路由路径：/pages/history-detail/index
 优先级：P1
 调用接口：
 
@@ -873,7 +873,7 @@ GET /api/qimen/history/:id - 获取历史记录详情
 
 #### 2.2.9 页面9：个人中心页
 所属模块：用户模块
-路由路径：/pages/user/profile
+路由路径：/pages/profile/index
 优先级：P1
 调用接口：
 
@@ -1234,16 +1234,37 @@ P2（辅助功能）：万年历、基础知识、关于/帮助（3页）
 9. **登录检查**：起盘、历史、个人中心页面需要登录，未登录自动跳转登录页
 10. **错误处理**：所有API错误统一处理，显示友好的错误提示
 
-1. 目录结构规划（严格按模块划分）
+1. 目录结构规划（模块化 + uni-app标准结构）
 qimen-miniapp/
 ├── src/
-│   ├── modules/                      # 业务模块目录 - 按三大模块组织所有业务代码
-│   │   │
-│   │   ├── user/                     # 用户模块（3页）- 负责用户认证、个人信息管理
-│   │   │   ├── pages/                # 用户模块页面 - 包含登录、注册、个人中心3个页面
-│   │   │   │   ├── login.vue         # 页面2：登录页 - 实现账号密码登录，表单验证（账号非空、密码≥6位），调用登录API，存储token到storage，登录成功后跳转回上一页或首页，支持跳转到注册页和忘记密码提示
-│   │   │   │   ├── register.vue      # 页面3：注册页 - 实现用户注册功能，表单验证（用户名3-20位字母数字下划线、密码6-20位、确认密码一致、昵称可选2-10位），调用注册API，注册成功后跳转到登录页，支持跳转到登录页
-│   │   │   │   └── profile.vue       # 页面9：个人中心页 - 展示用户信息（头像、昵称、账号、起盘次数），提供修改资料（仅昵称）、意见反馈（显示联系邮箱）、关于我们、退出登录功能，未登录时显示"请先登录"按钮，退出登录需二次确认
+│   ├── pages/                        # 页面目录（uni-app标准）- 所有页面统一放在此目录
+│   │   ├── index/                    # 首页
+│   │   │   └── index.vue            # 页面1：首页/引导页 - 应用启动首页，顶部显示Logo和标题，轮播图区域（3张Banner自动轮播间隔3秒，支持手指滑动），今日运势卡片（显示星级评分和简述，点击查看详情跳转到解读结果页），功能宫格（2行3列：起盘/历史/知识/万年历/关于/更多，点击检查登录状态），公告滚动条（文字从右向左滚动，点击查看详情弹窗），底部TabBar（首页/起盘/历史/我的），页面加载时调用系统配置API、今日运势API、公告列表API，今日运势缓存当天数据
+│   │   ├── login/                   # 登录页
+│   │   │   └── index.vue            # 页面2：登录页 - 实现账号密码登录，表单验证（账号非空、密码≥6位），调用登录API，存储token到storage，登录成功后跳转回上一页或首页，支持跳转到注册页和忘记密码提示
+│   │   ├── register/                # 注册页
+│   │   │   └── index.vue            # 页面3：注册页 - 实现用户注册功能，表单验证（用户名3-20位字母数字下划线、密码6-20位、确认密码一致、昵称可选2-10位），调用注册API，注册成功后跳转到登录页，支持跳转到登录页
+│   │   ├── qimen-input/             # 起盘输入页
+│   │   │   └── index.vue            # 页面4：起盘输入页 - 实现起盘输入功能，包含公历/农历切换、日期选择（picker组件）、时辰选择（12时辰列表）、性别选择（单选）、起盘类型选择（时家奇门/日家奇门，MVP只实现时家），前端验证（日期不超过当前、范围1900-2100、必选性别和时辰），调用起盘计算API，显示loading"正在起盘中..."，成功后跳转到盘面展示页传递数据，提供万年历查询快捷入口
+│   │   ├── qimen-plate/             # 盘面展示页
+│   │   │   └── index.vue            # 页面5：盘面展示页 - 展示奇门遁甲九宫格盘面（3x3），显示起盘信息（日期时辰性别、值符值使），渲染九宫格（每宫显示天盘星、地盘宫、人盘门、神盘），值符值使所在宫位高亮显示，点击任意宫位弹出详情（天地人神、天干地支、吉凶说明），提供"查看解读"按钮跳转到解读结果页，提供"保存记录"按钮调用保存API
+│   │   ├── qimen-result/            # 解读结果页
+│   │   │   └── index.vue            # 页面6：解读结果页 - 展示运势解读结果，包含总体运势评分（1-5星）、吉凶判断、分类运势卡片（事业运、财运、感情运、健康运，每项带星级和50-100字文案）、注意事项（3-5条），支持从盘面展示页跳转（传递盘面数据）或从首页今日运势跳转（调用今日运势API），提供"返回首页"和"查看盘面"按钮
+│   │   ├── history-list/            # 历史记录列表页
+│   │   │   └── index.vue            # 页面7：历史记录列表页 - 展示用户历史起盘记录列表，支持分页加载（每页10条），按时间倒序排列，每条记录显示日期时辰、性别、起盘类型、运势评分，支持下拉刷新、上拉加载更多，点击"查看详情"跳转到历史详情页，支持左滑删除或点击删除按钮（需二次确认），空状态显示"暂无历史记录"和"立即起盘"按钮
+│   │   ├── history-detail/          # 历史记录详情页
+│   │   │   └── index.vue            # 页面8：历史记录详情页 - 查看某条历史记录的完整信息，接收记录ID参数，调用历史详情API获取数据，展示起盘信息、完整九宫格盘面（复用PlateGrid组件）、解读结果（复用result页面的运势卡片），提供"重新起盘"按钮（跳转到起盘输入页并带入相同参数）、"删除记录"按钮（需二次确认，删除后返回列表页）
+│   │   ├── profile/                 # 个人中心页
+│   │   │   └── index.vue            # 页面9：个人中心页 - 展示用户信息（头像、昵称、账号、起盘次数），提供修改资料（仅昵称）、意见反馈（显示联系邮箱）、关于我们、退出登录功能，未登录时显示"请先登录"按钮，退出登录需二次确认
+│   │   ├── calendar/                # 万年历页
+│   │   │   └── index.vue            # 页面10：万年历页 - 提供万年历查询功能，显示日历组件（年月日选择），支持左右切换月份，调用万年历API获取数据（支持1900-2100年），点击日期显示详细信息（公历日期、农历日期、节气、天干地支），节气和农历节日用特殊颜色标注，今天用特殊样式标注，简化版不支持"使用此日期起盘"功能
+│   │   ├── knowledge/               # 基础知识页
+│   │   │   └── index.vue            # 页面11：基础知识页 - 提供奇门遁甲基础知识科普，顶部Tab切换分类（入门、八门、九星、八神、应用），调用知识文章API获取对应分类文章，文章列表展示标题和摘要，点击"阅读全文"展开完整内容（在当前卡片内），再次点击收起，支持下拉刷新，文章支持富文本展示（图文混排），简化版不支持搜索功能
+│   │   └── about/                   # 关于/帮助页
+│   │       └── index.vue            # 页面12：关于/帮助页 - 展示应用介绍、使用帮助、版本信息、联系方式，顶部显示应用Logo和版本号，应用介绍文字，使用帮助（折叠面板，包含"如何起盘"、"如何查看历史"等问题，点击展开/收起），联系我们（显示邮箱，点击复制到剪贴板），免责声明（必须展示），调用帮助文档API获取内容，支持富文本展示
+│   │
+│   ├── modules/                      # 业务模块目录 - 按三大模块组织业务代码（组件、API、状态、工具）
+│   │   ├── user/                     # 用户模块 - 负责用户认证、个人信息管理
 │   │   │   ├── components/           # 用户模块组件 - 用户模块可复用的UI组件
 │   │   │   │   ├── UserCard.vue      # 用户信息卡片 - 展示用户头像、昵称、账号、起盘次数，支持点击跳转到修改资料，接收userInfo作为props
 │   │   │   │   └── LoginForm.vue     # 登录表单 - 封装登录表单UI和验证逻辑，包含账号输入框、密码输入框（支持显示/隐藏）、登录按钮、忘记密码链接、立即注册链接，emit登录事件给父组件
@@ -1254,15 +1275,7 @@ qimen-miniapp/
 │   │   │   └── utils/                # 用户模块工具 - 用户模块专用工具函数
 │   │   │       └── auth.js           # 认证工具 - 提供认证相关工具函数：checkLogin()检查登录状态、getToken()从storage获取token、setToken()存储token、removeToken()清除token、redirectToLogin()跳转到登录页
 │   │   │
-│   │   ├── qimen/                    # 算命模块（7页）- 核心业务模块，负责奇门遁甲起盘、解读、历史记录、万年历、知识库
-│   │   │   ├── pages/                # 算命模块页面 - 包含起盘、盘面、解读、历史、万年历、知识7个页面
-│   │   │   │   ├── input.vue         # 页面4：起盘输入页 - 实现起盘输入功能，包含公历/农历切换、日期选择（picker组件）、时辰选择（12时辰列表）、性别选择（单选）、起盘类型选择（时家奇门/日家奇门，MVP只实现时家），前端验证（日期不超过当前、范围1900-2100、必选性别和时辰），调用起盘计算API，显示loading"正在起盘中..."，成功后跳转到盘面展示页传递数据，提供万年历查询快捷入口
-│   │   │   │   ├── plate.vue         # 页面5：盘面展示页 - 展示奇门遁甲九宫格盘面（3x3），显示起盘信息（日期时辰性别、值符值使），渲染九宫格（每宫显示天盘星、地盘宫、人盘门、神盘），值符值使所在宫位高亮显示，点击任意宫位弹出详情（天地人神、天干地支、吉凶说明），提供"查看解读"按钮跳转到解读结果页，提供"保存记录"按钮调用保存API
-│   │   │   │   ├── result.vue        # 页面6：解读结果页 - 展示运势解读结果，包含总体运势评分（1-5星）、吉凶判断、分类运势卡片（事业运、财运、感情运、健康运，每项带星级和50-100字文案）、注意事项（3-5条），支持从盘面展示页跳转（传递盘面数据）或从首页今日运势跳转（调用今日运势API），提供"返回首页"和"查看盘面"按钮
-│   │   │   │   ├── history-list.vue  # 页面7：历史记录列表页 - 展示用户历史起盘记录列表，支持分页加载（每页10条），按时间倒序排列，每条记录显示日期时辰、性别、起盘类型、运势评分，支持下拉刷新、上拉加载更多，点击"查看详情"跳转到历史详情页，支持左滑删除或点击删除按钮（需二次确认），空状态显示"暂无历史记录"和"立即起盘"按钮
-│   │   │   │   ├── history-detail.vue # 页面8：历史记录详情页 - 查看某条历史记录的完整信息，接收记录ID参数，调用历史详情API获取数据，展示起盘信息、完整九宫格盘面（复用PlateGrid组件）、解读结果（复用result页面的运势卡片），提供"重新起盘"按钮（跳转到起盘输入页并带入相同参数）、"删除记录"按钮（需二次确认，删除后返回列表页）
-│   │   │   │   ├── calendar.vue      # 页面10：万年历页 - 提供万年历查询功能，显示日历组件（年月日选择），支持左右切换月份，调用万年历API获取数据（支持1900-2100年），点击日期显示详细信息（公历日期、农历日期、节气、天干地支），节气和农历节日用特殊颜色标注，今天用特殊样式标注，简化版不支持"使用此日期起盘"功能
-│   │   │   │   └── knowledge.vue     # 页面11：基础知识页 - 提供奇门遁甲基础知识科普，顶部Tab切换分类（入门、八门、九星、八神、应用），调用知识文章API获取对应分类文章，文章列表展示标题和摘要，点击"阅读全文"展开完整内容（在当前卡片内），再次点击收起，支持下拉刷新，文章支持富文本展示（图文混排），简化版不支持搜索功能
+│   │   ├── qimen/                    # 算命模块 - 核心业务模块，负责奇门遁甲起盘、解读、历史记录、万年历、知识库
 │   │   │   ├── components/           # 算命模块组件 - 算命模块可复用的UI组件
 │   │   │   │   ├── PlateGrid.vue     # 九宫格盘面 - 渲染3x3九宫格盘面，接收盘面数据props（包含9宫信息），每宫显示4层信息（天盘星、地盘宫、人盘门、神盘），值符值使所在宫位高亮显示（金色边框），根据吉凶设置宫位颜色（大吉绿色、中吉浅绿、平灰色、凶橙色、大凶红色），点击宫位emit事件传递宫位数据给父组件
 │   │   │   │   ├── PalaceDetail.vue  # 宫位详情弹窗 - 弹窗组件展示单个宫位的详细信息，接收宫位数据props（position、direction、heaven_star、earth_palace、human_door、god、stem、branch、fortune、description），显示宫位方位、天地人神、天干地支、吉凶判断、说明文字，提供关闭按钮
@@ -1279,10 +1292,7 @@ qimen-miniapp/
 │   │   │       ├── calendar.js       # 日历转换工具 - 提供日历转换函数：solarToLunar()公历转农历、lunarToSolar()农历转公历、getSolarTerm()获取节气、getLunarFestival()获取农历节日、getStemBranch()计算天干地支，支持1900-2100年范围
 │   │   │       └── shichen.js        # 时辰转换工具（12时辰映射）- 提供时辰转换函数：timeToShichen()根据时间（HH:mm）返回时辰名称、shichenToTimeRange()根据时辰名称返回时间范围、getAllShichen()获取12时辰列表（子时23:00-01:00、丑时01:00-03:00...亥时21:00-23:00）、validateShichen()验证时辰是否有效
 │   │   │
-│   │   └── system/                   # 系统模块（2页）- 负责系统配置、首页、关于帮助、公告管理
-│   │       ├── pages/                # 系统模块页面 - 包含首页和关于2个页面
-│   │       │   ├── index.vue         # 页面1：首页/引导页 - 应用启动首页，顶部显示Logo和标题，轮播图区域（3张Banner自动轮播间隔3秒，支持手指滑动），今日运势卡片（显示星级评分和简述，点击查看详情跳转到解读结果页），功能宫格（2行3列：起盘/历史/知识/万年历/关于/更多，点击检查登录状态），公告滚动条（文字从右向左滚动，点击查看详情弹窗），底部TabBar（首页/起盘/历史/我的），页面加载时调用系统配置API、今日运势API、公告列表API，今日运势缓存当天数据
-│   │       │   └── about.vue         # 页面12：关于/帮助页 - 展示应用介绍、使用帮助、版本信息、联系方式，顶部显示应用Logo和版本号，应用介绍文字，使用帮助（折叠面板，包含"如何起盘"、"如何查看历史"等问题，点击展开/收起），联系我们（显示邮箱，点击复制到剪贴板），免责声明（必须展示），调用帮助文档API获取内容，支持富文本展示
+│   │   └── system/                   # 系统模块 - 负责系统配置、关于帮助、公告管理
 │   │       ├── components/           # 系统模块组件 - 系统模块可复用的UI组件
 │   │       │   ├── Banner.vue        # 轮播图组件 - 轮播图组件，接收图片列表props（包含图片URL和跳转链接），自动播放（间隔3秒），支持手指滑动切换，底部显示指示器圆点，点击图片可跳转（预留功能），使用uni-app的swiper组件实现
 │   │       │   ├── FunctionGrid.vue  # 功能宫格 - 功能宫格组件，显示2行3列共6个功能入口（起盘、历史、知识、万年历、关于、更多），每个格子显示图标和文字，点击emit事件给父组件，父组件处理登录检查和页面跳转，支持自定义图标和文字
@@ -1299,7 +1309,6 @@ qimen-miniapp/
 │   ├── common/                       # 公共资源（跨模块共享）- 所有模块共用的组件、工具、样式
 │   │   ├── components/               # 公共组件 - 跨模块复用的UI组件
 │   │   │   ├── NavBar.vue            # 导航栏 - 通用导航栏组件，支持自定义标题、返回按钮、右侧按钮，接收props（title、showBack、rightText、rightIcon），点击返回emit back事件，点击右侧按钮emit rightClick事件
-│   │   │   ├── TabBar.vue            # 底部导航 - 底部TabBar组件，4个Tab（首页、起盘、历史、我的），显示图标和文字，当前Tab高亮显示，点击Tab切换页面，需要登录的Tab（起盘、历史）点击时检查登录状态
 │   │   │   ├── Loading.vue           # 加载组件 - 全局loading组件，显示加载动画和提示文字，接收props（text、show），支持全屏遮罩或局部显示，使用uni-app的loading组件
 │   │   │   ├── Empty.vue             # 空状态组件 - 空状态展示组件，显示空状态图标、提示文字、操作按钮，接收props（icon、text、buttonText），点击按钮emit action事件，用于历史记录为空、知识文章为空等场景
 │   │   │   └── Modal.vue             # 弹窗组件（确认删除等）- 通用弹窗组件，支持确认/取消操作，接收props（title、content、confirmText、cancelText、show），点击确认emit confirm事件，点击取消emit cancel事件，用于删除确认、退出登录确认等场景
@@ -1318,7 +1327,8 @@ qimen-miniapp/
 │   │       ├── common.scss           # 通用样式 - 定义通用样式类：布局类、间距类、文字类、按钮类、卡片类等
 │   │       └── reset.scss            # 样式重置 - 重置浏览器默认样式，统一各平台样式表现
 │   │
-│   ├── static/                       # 静态资源 - 图片、图标、字体等静态文件
+│   │
+│   ├── static/                       # 静态资源 - 图片、图标、字体等静态文件（uni-app标准位置）
 │   │   ├── images/                   # 图片目录
 │   │   │   ├── logo.png              # 应用Logo - 应用主Logo图片，用于首页、登录页、关于页，尺寸建议200x200px
 │   │   │   ├── default-avatar.png    # 默认头像 - 用户默认头像图片，用于个人中心页，尺寸建议100x100px
@@ -1341,14 +1351,14 @@ qimen-miniapp/
 ├── .gitignore                        # Git忽略文件 - Git版本控制忽略文件配置，忽略node_modules、dist、.env等
 ├── package.json                      # 依赖配置 - 项目依赖配置文件，定义项目名称、版本、依赖包（Vue 3、Pinia、uView Plus等）、脚本命令
 ├── README.md                         # 项目说明文档 - 项目说明文档，包含项目介绍、技术栈、目录结构、开发指南、部署说明
-└── vue.config.js                     # Vue配置（可选）- Vue CLI配置文件，配置代理、打包优化、环境变量等（可选）
+└── vite.config.js                    # Vite配置 - uni-app Vite构建配置文件，配置代理、别名、开发服务器等
 2. 模块详细划分
 2.1 用户模块（User Module）- 3页
 页面：
 
-页面2：登录页（modules/user/pages/login.vue）
-页面3：注册页（modules/user/pages/register.vue）
-页面9：个人中心页（modules/user/pages/profile.vue）
+页面2：登录页（pages/login/index.vue）
+页面3：注册页（pages/register/index.vue）
+页面9：个人中心页（pages/profile/index.vue）
 API接口（4个）：
 
 // modules/user/api/user.js
@@ -1376,13 +1386,13 @@ LoginForm.vue - 登录表单组件
 2.2 算命模块（Qimen Module）- 7页
 页面：
 
-页面4：起盘输入页（modules/qimen/pages/input.vue）
-页面5：盘面展示页（modules/qimen/pages/plate.vue）
-页面6：解读结果页（modules/qimen/pages/result.vue）
-页面7：历史记录列表页（modules/qimen/pages/history-list.vue）
-页面8：历史记录详情页（modules/qimen/pages/history-detail.vue）
-页面10：万年历页（modules/qimen/pages/calendar.vue）
-页面11：基础知识页（modules/qimen/pages/knowledge.vue）
+页面4：起盘输入页（pages/qimen-input/index.vue）
+页面5：盘面展示页（pages/qimen-plate/index.vue）
+页面6：解读结果页（pages/qimen-result/index.vue）
+页面7：历史记录列表页（pages/history-list/index.vue）
+页面8：历史记录详情页（pages/history-detail/index.vue）
+页面10：万年历页（pages/calendar/index.vue）
+页面11：基础知识页（pages/knowledge/index.vue）
 API接口（8个）：
 
 // modules/qimen/api/qimen.js
@@ -1414,8 +1424,8 @@ ArticleCard.vue - 知识文章卡片
 2.3 系统模块（System Module）- 2页
 页面：
 
-页面1：首页/引导页（modules/system/pages/index.vue）
-页面12：关于/帮助页（modules/system/pages/about.vue）
+页面1：首页/引导页（pages/index/index.vue）
+页面12：关于/帮助页（pages/about/index.vue）
 API接口（6个）：
 
 // modules/system/api/system.js
@@ -1440,79 +1450,79 @@ Banner.vue - 轮播图组件
 FunctionGrid.vue - 功能宫格
 AnnouncementBar.vue - 公告滚动条
 HelpAccordion.vue - 帮助折叠面板
-3. pages.json 配置（按模块组织）
+3. pages.json 配置（uni-app标准路径）
 {
   "pages": [
     // 系统模块（2页）
     {
-      "path": "modules/system/pages/index",
+      "path": "pages/index/index",
       "style": { "navigationBarTitleText": "首页" }
     },
     {
-      "path": "modules/system/pages/about",
+      "path": "pages/about/index",
       "style": { "navigationBarTitleText": "关于" }
     },
     
     // 用户模块（3页）
     {
-      "path": "modules/user/pages/login",
-      "style": { "navigationBarTitleText": "登录" }
+      "path": "pages/login/index",
+      "style": { "navigationBarTitleText": "登录", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/user/pages/register",
-      "style": { "navigationBarTitleText": "注册" }
+      "path": "pages/register/index",
+      "style": { "navigationBarTitleText": "注册", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/user/pages/profile",
+      "path": "pages/profile/index",
       "style": { "navigationBarTitleText": "个人中心" }
     },
     
     // 算命模块（7页）
     {
-      "path": "modules/qimen/pages/input",
-      "style": { "navigationBarTitleText": "奇门起盘" }
+      "path": "pages/qimen-input/index",
+      "style": { "navigationBarTitleText": "奇门起盘", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/qimen/pages/plate",
-      "style": { "navigationBarTitleText": "盘面展示" }
+      "path": "pages/qimen-plate/index",
+      "style": { "navigationBarTitleText": "盘面展示", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/qimen/pages/result",
-      "style": { "navigationBarTitleText": "运势解读" }
+      "path": "pages/qimen-result/index",
+      "style": { "navigationBarTitleText": "运势解读", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/qimen/pages/history-list",
-      "style": { "navigationBarTitleText": "历史记录" }
+      "path": "pages/history-list/index",
+      "style": { "navigationBarTitleText": "历史记录", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/qimen/pages/history-detail",
-      "style": { "navigationBarTitleText": "历史详情" }
+      "path": "pages/history-detail/index",
+      "style": { "navigationBarTitleText": "历史详情", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/qimen/pages/calendar",
-      "style": { "navigationBarTitleText": "万年历" }
+      "path": "pages/calendar/index",
+      "style": { "navigationBarTitleText": "万年历", "navigationStyle": "custom" }
     },
     {
-      "path": "modules/qimen/pages/knowledge",
-      "style": { "navigationBarTitleText": "基础知识" }
+      "path": "pages/knowledge/index",
+      "style": { "navigationBarTitleText": "基础知识", "navigationStyle": "custom" }
     }
   ],
   "tabBar": {
     "list": [
       {
-        "pagePath": "modules/system/pages/index",
+        "pagePath": "pages/index/index",
         "text": "首页"
       },
       {
-        "pagePath": "modules/qimen/pages/input",
+        "pagePath": "pages/qimen-input/index",
         "text": "起盘"
       },
       {
-        "pagePath": "modules/qimen/pages/history-list",
+        "pagePath": "pages/history-list/index",
         "text": "历史"
       },
       {
-        "pagePath": "modules/user/pages/profile",
+        "pagePath": "pages/profile/index",
         "text": "我的"
       }
     ]
@@ -1545,7 +1555,7 @@ qimen-backend/
 │   │   ├── user/                    # 用户模块 - 负责用户认证、个人信息管理
 │   │   │   ├── __init__.py          # 模块初始化 - 用户模块初始化文件，导出router供main.py注册
 │   │   │   ├── router.py            # 用户路由（4个API）- 定义4个用户API路由：POST /api/user/register（用户注册，验证用户名唯一性，密码bcrypt加密）、POST /api/user/login（用户登录，验证账号密码，返回JWT token）、GET /api/user/info（获取用户信息，需token认证，返回用户信息和起盘次数）、PUT /api/user/info（修改用户信息，仅支持修改昵称，需token认证）
-│   │   │   ├── models.py            # 用户数据模型 - 定义User数据库模型（SQLAlchemy ORM），字段：id、username（唯一索引）、password_hash、nickname、created_at、updated_at，提供verify_password()方法验证密码、set_password()方法设置密码
+│   │   │   ├── models.py            # 用户数据模型（对应数据库表4.2.1 users）- 定义User数据库模型（SQLAlchemy ORM），字段：id（INTEGER PRIMARY KEY）、username（VARCHAR(50) UNIQUE NOT NULL）、password_hash（VARCHAR(255) NOT NULL）、nickname（VARCHAR(50) NULL）、created_at（DATETIME）、updated_at（DATETIME），提供verify_password()方法验证密码、set_password()方法设置密码，唯一索引：idx_username
 │   │   │   ├── schemas.py           # 用户请求/响应模式 - 定义Pydantic schemas：UserRegisterRequest（注册请求，验证用户名3-20位、密码6-20位）、UserLoginRequest（登录请求）、UserLoginResponse（登录响应，包含token和用户信息）、UserInfoResponse（用户信息响应）、UserUpdateRequest（更新请求，仅昵称）
 │   │   │   ├── service.py           # 用户业务逻辑 - 实现用户业务逻辑：create_user()创建用户（检查用户名唯一性、密码加密）、authenticate_user()验证用户（验证账号密码）、get_user_by_id()根据ID获取用户、get_user_by_username()根据用户名获取用户、update_user()更新用户信息、get_user_qipan_count()获取用户起盘次数
 │   │   │   └── dependencies.py      # 用户模块依赖 - 定义依赖注入函数：get_current_user()从token获取当前用户（用于需要认证的接口），验证token有效性，token过期返回401错误
@@ -1553,7 +1563,7 @@ qimen-backend/
 │   │   ├── qimen/                   # 算命模块 - 核心业务模块，负责奇门遁甲起盘、解读、历史记录、万年历、知识库
 │   │   │   ├── __init__.py          # 模块初始化 - 算命模块初始化文件，导出router供main.py注册
 │   │   │   ├── router.py            # 算命路由（8个API）- 定义8个算命API路由：POST /api/qimen/calculate（起盘计算，调用qimen_engine计算盘面，返回盘面数据）、POST /api/qimen/save（保存记录，需token，保存到数据库，用户最多保存100条记录）、GET /api/qimen/history（获取历史列表，需token，支持分页参数page和size，默认每页10条）、GET /api/qimen/history/{id}（获取历史详情，需token，验证记录所有权）、DELETE /api/qimen/history/{id}（删除历史，需token，验证所有权）、GET /api/qimen/fortune（获取今日运势，可选date参数，默认当天，根据日期计算运势）、GET /api/tools/calendar（获取万年历数据，必需year和month参数，调用calendar_utils）、GET /api/knowledge/articles（获取知识文章，必需category参数，根据分类筛选）
-│   │   │   ├── models.py            # 算命数据模型 - 定义数据库模型：QimenRecord（起盘记录，字段：id、user_id、datetime、gender、type、plate_data（JSON）、fortune_score、created_at）、KnowledgeArticle（知识文章，字段：id、category、title、summary、content、order、created_at）
+│   │   │   ├── models.py            # 算命数据模型（对应数据库表4.2.2 qimen_records和4.2.3 knowledge_articles）- 定义2个数据库模型：1) QimenRecord（起盘记录表，字段：id、user_id（FOREIGN KEY users.id）、datetime、gender（CHECK IN ('男','女')）、type（CHECK IN ('时家奇门','日家奇门')）、plate_data（TEXT JSON）、fortune_data（TEXT JSON）、fortune_score（DECIMAL(2,1) CHECK 1.0-5.0）、created_at，索引：idx_user_id、idx_created_at、idx_user_created，外键级联删除）；2) KnowledgeArticle（知识文章表，字段：id、category（CHECK IN ('入门','八门','九星','八神','应用')）、title、summary、content、order_num、created_at，索引：idx_category_order）
 │   │   │   ├── schemas.py           # 算命请求/响应模式 - 定义Pydantic schemas：QimenCalculateRequest（起盘请求，验证日期范围1900-2100、性别、时辰）、QimenCalculateResponse（起盘响应，包含盘面数据）、QimenSaveRequest（保存请求）、QimenHistoryResponse（历史记录响应）、QimenHistoryListResponse（历史列表响应，包含分页信息）、FortuneResponse（运势响应）、CalendarRequest（万年历请求）、CalendarResponse（万年历响应）、KnowledgeArticleResponse（知识文章响应）
 │   │   │   ├── service.py           # 算命业务逻辑 - 实现算命业务逻辑：calculate_qimen()调用计算引擎起盘、save_qimen_record()保存记录（检查用户最多100条，超出删除最早的）、get_user_history()获取用户历史（分页）、get_record_by_id()获取记录详情（验证所有权）、delete_record()删除记录（验证所有权）、get_daily_fortune()获取今日运势（缓存当天数据）、get_calendar_data()获取万年历数据、get_knowledge_articles()获取知识文章（按分类和order排序）
 │   │   │   ├── qimen_engine.py      # 奇门遁甲计算引擎 - 核心计算引擎，实现奇门遁甲起盘算法：calculate()主计算函数（输入日期时辰性别，输出盘面数据）、get_jieqi()获取节气、get_ju()起局（阴遁阳遁）、get_zhifu_zhishi()获取值符值使、arrange_bagong()排八宫（天盘、地盘、人盘、神盘）、calculate_fortune()计算吉凶、使用constants中的八门九星八神数据
@@ -1564,7 +1574,7 @@ qimen-backend/
 │   │   └── system/                  # 系统模块 - 负责系统配置、首页、关于帮助、公告管理
 │   │       ├── __init__.py          # 模块初始化 - 系统模块初始化文件，导出router供main.py注册
 │   │       ├── router.py            # 系统路由（6个API）- 定义6个系统API路由：GET /api/system/config（获取系统配置，返回轮播图、版本号、联系邮箱等）、GET /api/system/help（获取帮助文档，返回帮助问题列表）、POST /api/system/feedback（意见反馈，保存到数据库）、GET /api/system/announcements（获取公告列表，最多返回3条最新公告）、GET /api/system/statistics（数据统计，返回总用户数、总起盘次数、今日起盘次数）、GET /api/system/health（健康检查，返回服务状态和数据库连接状态）
-│   │       ├── models.py            # 系统数据模型 - 定义数据库模型：SystemConfig（系统配置，字段：id、key、value、description）、Announcement（公告，字段：id、title、content、priority、created_at）、Feedback（意见反馈，字段：id、user_id、content、contact、created_at）
+│   │       ├── models.py            # 系统数据模型（对应数据库表4.2.4 system_config、4.2.5 announcements、4.2.6 feedback）- 定义3个数据库模型：1) SystemConfig（系统配置表，字段：id、key（VARCHAR(50) UNIQUE NOT NULL）、value（TEXT JSON）、description、created_at、updated_at，唯一索引：idx_config_key）；2) Announcement（公告表，字段：id、title、content、priority（INTEGER DEFAULT 0）、created_at，索引：idx_priority_created）；3) Feedback（意见反馈表，字段：id、user_id（NULL FOREIGN KEY users.id）、content、contact、created_at，索引：idx_user_id、idx_created_at，外键ON DELETE SET NULL）
 │   │       ├── schemas.py           # 系统请求/响应模式 - 定义Pydantic schemas：SystemConfigResponse（系统配置响应）、HelpDocResponse（帮助文档响应）、FeedbackRequest（反馈请求）、AnnouncementResponse（公告响应）、StatisticsResponse（统计响应）、HealthResponse（健康检查响应）
 │   │       └── service.py           # 系统业务逻辑 - 实现系统业务逻辑：get_system_config()获取系统配置（从数据库读取，缓存）、get_help_doc()获取帮助文档、save_feedback()保存意见反馈、get_announcements()获取公告列表（按priority和created_at排序）、get_statistics()获取数据统计（查询数据库统计）、check_health()健康检查（检查数据库连接）
 │   │
@@ -2263,7 +2273,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
 - 所属模块：用户模块
 - 接口描述：新用户注册账号
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面3 - 注册页（`modules/user/pages/register.vue`）
+- 调用页面：页面3 - 注册页（`pages/register/index.vue`）
 
 **请求参数**
 
@@ -2313,7 +2323,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
 
 **业务逻辑实现**
 
-1. **前端验证**（`modules/user/pages/register.vue`）：
+1. **前端验证**（`pages/register/index.vue`）：
    - 用户名验证：调用`common/utils/validator.js`的`validateUsername()`方法
    - 密码验证：调用`validatePassword()`方法，检查长度6-20位
    - 确认密码验证：检查两次密码输入是否一致
@@ -2374,11 +2384,11 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
      ```
    - 使用`common/response.py`的`success_response()`包装返回
 
-5. **前端处理响应**（`modules/user/pages/register.vue`）：
+5. **前端处理响应**（`pages/register/index.vue`）：
    - 注册成功：
      - 隐藏loading
      - 显示成功提示："注册成功，请登录"
-     - 延迟1秒后跳转到登录页：`uni.navigateTo({ url: '/modules/user/pages/login' })`
+     - 延迟1秒后跳转到登录页：`uni.navigateTo({ url: '/pages/login/index' })`
    - 注册失败：
      - 隐藏loading
      - 显示错误提示：后端返回的message（如"用户名已存在"）
@@ -2386,7 +2396,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
 **涉及文件清单**
 
 前端文件：
-- `modules/user/pages/register.vue` - 注册页面，表单UI和交互
+- `pages/register/index.vue` - 注册页面，表单UI和交互
 - `modules/user/api/index.js` - 定义`register()`接口方法
 - `common/utils/validator.js` - 表单验证工具函数
 - `common/utils/request.js` - HTTP请求封装
@@ -2412,7 +2422,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
 - 所属模块：用户模块
 - 接口描述：用户通过账号密码登录系统
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面2 - 登录页（`modules/user/pages/login.vue`）
+- 调用页面：页面2 - 登录页（`pages/login/index.vue`）
 
 **请求参数**
 
@@ -2463,7 +2473,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
 
 **业务逻辑实现**
 
-1. **前端验证**（`modules/user/pages/login.vue`）：
+1. **前端验证**（`pages/login/index.vue`）：
    - 用户名验证：调用`common/utils/validator.js`的`validateRequired()`，检查非空
    - 密码验证：调用`validatePassword()`，检查长度≥6位
    - 验证失败：显示错误提示，阻止提交
@@ -2519,7 +2529,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
      }
      ```
 
-5. **前端处理响应**（`modules/user/pages/login.vue`）：
+5. **前端处理响应**（`pages/login/index.vue`）：
    - 登录成功：
      - 存储token到本地：`uni.setStorageSync('token', data.token)`
      - 存储用户信息到Pinia store：调用`modules/user/store/index.js`的`setUserInfo(data.user)`
@@ -2531,7 +2541,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
        if (pages.length > 1) {
          uni.navigateBack()  // 返回上一页
        } else {
-         uni.switchTab({ url: '/modules/system/pages/index' })  // 跳转首页
+         uni.switchTab({ url: '/pages/index/index' })  // 跳转首页
        }
        ```
    - 登录失败：
@@ -2540,7 +2550,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
 **涉及文件清单**
 
 前端文件：
-- `modules/user/pages/login.vue` - 登录页面
+- `pages/login/index.vue` - 登录页面
 - `modules/user/api/index.js` - 定义`login()`接口方法
 - `modules/user/store/index.js` - 用户状态管理，存储token和用户信息
 - `modules/user/utils/auth.js` - `setToken()`存储token方法
@@ -2570,7 +2580,7 @@ CREATE INDEX idx_created_at_feedback ON feedback(created_at DESC);
 - 所属模块：用户模块
 - 接口描述：获取当前登录用户的详细信息
 - 认证要求：需要JWT token认证
-- 调用页面：页面9 - 个人中心页（`modules/user/pages/profile.vue`）
+- 调用页面：页面9 - 个人中心页（`pages/profile/index.vue`）
 
 **请求参数**
 
@@ -2611,7 +2621,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/user/pages/profile.vue`）：
+1. **前端发起请求**（`pages/profile/index.vue`）：
    - 页面加载时（`onLoad`生命周期）调用
    - 调用`modules/user/api/index.js`的`getUserInfo()`方法
    - 请求会自动携带token（由`common/utils/request.js`的请求拦截器添加）
@@ -2673,7 +2683,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
      }
      ```
 
-6. **前端处理响应**（`modules/user/pages/profile.vue`）：
+6. **前端处理响应**（`pages/profile/index.vue`）：
    - 成功：
      - 更新页面显示的用户信息
      - 更新Pinia store：`userStore.setUserInfo(data)`
@@ -2685,7 +2695,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **涉及文件清单**
 
 前端文件：
-- `modules/user/pages/profile.vue` - 个人中心页面，调用接口
+- `pages/profile/index.vue` - 个人中心页面，调用接口
 - `modules/user/api/index.js` - 定义`getUserInfo()`接口方法
 - `modules/user/store/index.js` - 更新用户信息到store
 - `common/utils/request.js` - 请求拦截器自动添加token
@@ -2714,7 +2724,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - 所属模块：用户模块
 - 接口描述：修改当前登录用户的个人信息（仅支持修改昵称）
 - 认证要求：需要JWT token认证
-- 调用页面：页面9 - 个人中心页（`modules/user/pages/profile.vue`）
+- 调用页面：页面9 - 个人中心页（`pages/profile/index.vue`）
 
 **请求参数**
 
@@ -2766,14 +2776,14 @@ Body：
 
 **业务逻辑实现**
 
-1. **前端触发**（`modules/user/pages/profile.vue`）：
+1. **前端触发**（`pages/profile/index.vue`）：
    - 点击"修改资料"按钮
    - 弹出编辑弹窗（使用`common/components/Modal.vue`）
    - 弹窗内容：
      - 输入框：显示当前昵称，允许编辑
      - 保存按钮、取消按钮
 
-2. **前端验证**（`modules/user/pages/profile.vue`）：
+2. **前端验证**（`pages/profile/index.vue`）：
    - 昵称验证：调用`common/utils/validator.js`的`validateNickname()`
    - 检查长度：2-10位
    - 验证失败：显示错误提示，阻止提交
@@ -2820,7 +2830,7 @@ Body：
      }
      ```
 
-6. **前端处理响应**（`modules/user/pages/profile.vue`）：
+6. **前端处理响应**（`pages/profile/index.vue`）：
    - 修改成功：
      - 隐藏loading
      - 关闭编辑弹窗
@@ -2834,7 +2844,7 @@ Body：
 **涉及文件清单**
 
 前端文件：
-- `modules/user/pages/profile.vue` - 个人中心页面，修改资料功能
+- `pages/profile/index.vue` - 个人中心页面，修改资料功能
 - `modules/user/api/index.js` - 定义`updateUserInfo()`接口方法
 - `modules/user/store/index.js` - 更新用户信息到store
 - `common/components/Modal.vue` - 编辑弹窗组件
@@ -2888,7 +2898,7 @@ Body：
 - 所属模块：算命模块
 - 接口描述：根据用户输入的生辰信息进行奇门遁甲起盘计算
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面4 - 起盘输入页（`modules/qimen/pages/input.vue`）
+- 调用页面：页面4 - 起盘输入页（`pages/qimen-input/index.vue`）
 
 **请求参数**
 
@@ -2963,7 +2973,7 @@ Body：
 
 **业务逻辑实现**
 
-1. **前端验证**（`modules/qimen/pages/input.vue`）：
+1. **前端验证**（`pages/qimen-input/index.vue`）：
    - 日期验证：不能超过当前时间，范围1900-2100年
    - 性别验证：必须选择男或女
    - 时辰验证：必须选择12时辰之一
@@ -3016,10 +3026,10 @@ Body：
    - 合并盘面数据和运势数据
    - 返回完整响应
 
-5. **前端处理响应**（`modules/qimen/pages/input.vue`）：
+5. **前端处理响应**（`pages/qimen-input/index.vue`）：
    - 起盘成功：
      - 隐藏loading
-     - 跳转到盘面展示页：`uni.navigateTo({ url: '/modules/qimen/pages/plate', success: (res) => { res.eventChannel.emit('plateData', data) } })`
+     - 跳转到盘面展示页：`uni.navigateTo({ url: '/pages/qimen-plate/index', success: (res) => { res.eventChannel.emit('plateData', data) } })`
      - 传递盘面数据给下一页
    - 起盘失败：
      - 显示错误提示
@@ -3027,7 +3037,7 @@ Body：
 **涉及文件清单**
 
 前端文件：
-- `modules/qimen/pages/input.vue` - 起盘输入页
+- `pages/qimen-input/index.vue` - 起盘输入页
 - `modules/qimen/api/index.js` - 定义`calculateQimen()`接口方法
 - `modules/qimen/components/DateTimePicker.vue` - 日期时辰选择组件
 - `modules/qimen/utils/shichen.js` - 时辰转换工具
@@ -3053,7 +3063,7 @@ Body：
 - 所属模块：算命模块
 - 接口描述：保存用户的起盘记录到数据库
 - 认证要求：需要JWT token认证
-- 调用页面：页面5 - 盘面展示页（`modules/qimen/pages/plate.vue`）
+- 调用页面：页面5 - 盘面展示页（`pages/qimen-plate/index.vue`）
 
 **请求参数**
 
@@ -3109,7 +3119,7 @@ Body：
 
 **业务逻辑实现**
 
-1. **前端触发**（`modules/qimen/pages/plate.vue`）：
+1. **前端触发**（`pages/qimen-plate/index.vue`）：
    - 点击"保存记录"按钮
    - 调用`modules/qimen/api/index.js`的`saveQimenRecord()`方法
    - 传递当前盘面数据和运势数据
@@ -3149,7 +3159,7 @@ Body：
    **步骤3：返回结果**
    - 返回记录ID和创建时间
 
-4. **前端处理响应**（`modules/qimen/pages/plate.vue`）：
+4. **前端处理响应**（`pages/qimen-plate/index.vue`）：
    - 保存成功：
      - 显示成功提示："保存成功"
      - 更新按钮状态为"已保存"（置灰）
@@ -3159,7 +3169,7 @@ Body：
 **涉及文件清单**
 
 前端文件：
-- `modules/qimen/pages/plate.vue` - 盘面展示页
+- `pages/qimen-plate/index.vue` - 盘面展示页
 - `modules/qimen/api/index.js` - 定义`saveQimenRecord()`接口方法
 
 后端文件：
@@ -3183,7 +3193,7 @@ Body：
 - 所属模块：算命模块
 - 接口描述：获取用户的起盘历史记录列表（支持分页）
 - 认证要求：需要JWT token认证
-- 调用页面：页面7 - 历史记录列表页（`modules/qimen/pages/history-list.vue`）
+- 调用页面：页面7 - 历史记录列表页（`pages/history-list/index.vue`）
 
 **请求参数**
 
@@ -3239,7 +3249,7 @@ GET /api/qimen/history?page=1&size=10
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/qimen/pages/history-list.vue`）：
+1. **前端发起请求**（`pages/history-list/index.vue`）：
    - 页面加载时调用第一页：`getHistoryList({ page: 1, size: 10 })`
    - 下拉刷新时重新加载第一页
    - 上拉加载更多时加载下一页：`page++`
@@ -3279,7 +3289,7 @@ GET /api/qimen/history?page=1&size=10
    - 使用`common/pagination.py`的`paginated_response()`包装返回
    - 返回items、total、page、size、pages
 
-4. **前端处理响应**（`modules/qimen/pages/history-list.vue`）：
+4. **前端处理响应**（`pages/history-list/index.vue`）：
    - 第一页加载：
      - 清空列表
      - 设置列表数据：`historyList = data.items`
@@ -3295,7 +3305,7 @@ GET /api/qimen/history?page=1&size=10
 **涉及文件清单**
 
 前端文件：
-- `modules/qimen/pages/history-list.vue` - 历史记录列表页
+- `pages/history-list/index.vue` - 历史记录列表页
 - `modules/qimen/api/index.js` - 定义`getHistoryList()`接口方法
 - `modules/qimen/components/HistoryCard.vue` - 历史记录卡片组件
 - `common/components/Empty.vue` - 空状态组件
@@ -3321,7 +3331,7 @@ GET /api/qimen/history?page=1&size=10
 - 所属模块：算命模块
 - 接口描述：获取某条历史记录的完整详情（包含盘面和运势数据）
 - 认证要求：需要JWT token认证
-- 调用页面：页面8 - 历史记录详情页（`modules/qimen/pages/history-detail.vue`）
+- 调用页面：页面8 - 历史记录详情页（`pages/history-detail/index.vue`）
 
 **请求参数**
 
@@ -3389,7 +3399,7 @@ GET /api/qimen/history/1
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/qimen/pages/history-detail.vue`）：
+1. **前端发起请求**（`pages/history-detail/index.vue`）：
    - 页面加载时（`onLoad`）接收记录ID参数
    - 调用`getHistoryDetail(id)`获取详情
 
@@ -3416,7 +3426,7 @@ GET /api/qimen/history/1
    **步骤4：返回结果**
    - 返回完整记录数据（包含盘面和运势）
 
-4. **前端处理响应**（`modules/qimen/pages/history-detail.vue`）：
+4. **前端处理响应**（`pages/history-detail/index.vue`）：
    - 成功：
      - 渲染起盘信息
      - 渲染九宫格盘面（复用`PlateGrid.vue`组件）
@@ -3428,7 +3438,7 @@ GET /api/qimen/history/1
 **涉及文件清单**
 
 前端文件：
-- `modules/qimen/pages/history-detail.vue` - 历史记录详情页
+- `pages/history-detail/index.vue` - 历史记录详情页
 - `modules/qimen/api/index.js` - 定义`getHistoryDetail()`接口方法
 - `modules/qimen/components/PlateGrid.vue` - 九宫格盘面组件（复用）
 - `modules/qimen/components/FortuneCard.vue` - 运势卡片组件（复用）
@@ -3503,7 +3513,7 @@ DELETE /api/qimen/history/1
 
 **业务逻辑实现**
 
-1. **前端触发**（`modules/qimen/pages/history-list.vue`或`history-detail.vue`）：
+1. **前端触发**（`pages/history-list/index.vue`或`history-detail.vue`）：
    - 点击"删除"按钮
    - 弹出确认弹窗（使用`common/components/Modal.vue`）
    - 弹窗内容："确定删除这条记录吗？"
@@ -3544,8 +3554,8 @@ DELETE /api/qimen/history/1
 **涉及文件清单**
 
 前端文件：
-- `modules/qimen/pages/history-list.vue` - 历史记录列表页
-- `modules/qimen/pages/history-detail.vue` - 历史记录详情页
+- `pages/history-list/index.vue` - 历史记录列表页
+- `pages/history-detail/index.vue` - 历史记录详情页
 - `modules/qimen/api/index.js` - 定义`deleteHistoryRecord()`接口方法
 - `common/components/Modal.vue` - 确认弹窗组件
 
@@ -3570,7 +3580,7 @@ DELETE /api/qimen/history/1
 - 所属模块：算命模块
 - 接口描述：获取今日运势（根据当天日期自动计算）
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面1 - 首页（`modules/system/pages/index.vue`）、页面6 - 解读结果页
+- 调用页面：页面1 - 首页（`pages/index/index.vue`）、页面6 - 解读结果页
 
 **请求参数**
 
@@ -3625,7 +3635,7 @@ GET /api/qimen/fortune?date=2024-01-01
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/system/pages/index.vue`）：
+1. **前端发起请求**（`pages/index/index.vue`）：
    - 页面加载时调用`getDailyFortune()`
    - 不传date参数，使用默认当天日期
 
@@ -3663,7 +3673,7 @@ GET /api/qimen/fortune?date=2024-01-01
    **步骤5：返回结果**
    - 返回FortuneData结构
 
-4. **前端处理响应**（`modules/system/pages/index.vue`）：
+4. **前端处理响应**（`pages/index/index.vue`）：
    - 成功：
      - 渲染今日运势卡片（使用`DailyFortuneCard.vue`组件）
      - 显示星级评分和运势简述
@@ -3674,8 +3684,8 @@ GET /api/qimen/fortune?date=2024-01-01
 **涉及文件清单**
 
 前端文件：
-- `modules/system/pages/index.vue` - 首页，展示今日运势卡片
-- `modules/qimen/pages/result.vue` - 解读结果页，展示完整运势
+- `pages/index/index.vue` - 首页，展示今日运势卡片
+- `pages/qimen-result/index.vue` - 解读结果页，展示完整运势
 - `modules/qimen/api/index.js` - 定义`getDailyFortune()`接口方法
 - `modules/system/components/DailyFortuneCard.vue` - 今日运势卡片组件
 
@@ -3698,7 +3708,7 @@ GET /api/qimen/fortune?date=2024-01-01
 - 所属模块：算命模块
 - 接口描述：获取指定年月的万年历数据（公历、农历、节气、节日）
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面10 - 万年历页（`modules/qimen/pages/calendar.vue`）
+- 调用页面：页面10 - 万年历页（`pages/calendar/index.vue`）
 
 **请求参数**
 
@@ -3767,7 +3777,7 @@ GET /api/tools/calendar?year=2024&month=1
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/qimen/pages/calendar.vue`）：
+1. **前端发起请求**（`pages/calendar/index.vue`）：
    - 页面加载时显示当前月份
    - 调用`getCalendarData({ year: 2024, month: 1 })`
    - 点击左右箭头切换月份时重新调用
@@ -3800,7 +3810,7 @@ GET /api/tools/calendar?year=2024&month=1
    **步骤3：返回结果**
    - 返回包含所有日期数据的数组
 
-4. **前端处理响应**（`modules/qimen/pages/calendar.vue`）：
+4. **前端处理响应**（`pages/calendar/index.vue`）：
    - 成功：
      - 渲染日历表格（使用`CalendarPicker.vue`组件）
      - 显示公历日期（大字）
@@ -3815,7 +3825,7 @@ GET /api/tools/calendar?year=2024&month=1
 **涉及文件清单**
 
 前端文件：
-- `modules/qimen/pages/calendar.vue` - 万年历页面
+- `pages/calendar/index.vue` - 万年历页面
 - `modules/qimen/api/index.js` - 定义`getCalendarData()`接口方法
 - `modules/qimen/components/CalendarPicker.vue` - 日历选择器组件
 
@@ -3838,7 +3848,7 @@ GET /api/tools/calendar?year=2024&month=1
 - 所属模块：算命模块
 - 接口描述：获取奇门遁甲基础知识文章（按分类筛选）
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面11 - 基础知识页（`modules/qimen/pages/knowledge.vue`）
+- 调用页面：页面11 - 基础知识页（`pages/knowledge/index.vue`）
 
 **请求参数**
 
@@ -3893,7 +3903,7 @@ GET /api/knowledge/articles?category=入门
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/qimen/pages/knowledge.vue`）：
+1. **前端发起请求**（`pages/knowledge/index.vue`）：
    - 页面加载时默认显示"入门"分类
    - 调用`getKnowledgeArticles({ category: '入门' })`
    - 点击Tab切换分类时重新调用
@@ -3922,7 +3932,7 @@ GET /api/knowledge/articles?category=入门
    **步骤3：返回结果**
    - 返回文章列表（按order_num排序）
 
-4. **前端处理响应**（`modules/qimen/pages/knowledge.vue`）：
+4. **前端处理响应**（`pages/knowledge/index.vue`）：
    - 成功：
      - 渲染文章列表（使用`ArticleCard.vue`组件）
      - 每篇文章显示标题和摘要
@@ -3935,7 +3945,7 @@ GET /api/knowledge/articles?category=入门
 **涉及文件清单**
 
 前端文件：
-- `modules/qimen/pages/knowledge.vue` - 基础知识页面
+- `pages/knowledge/index.vue` - 基础知识页面
 - `modules/qimen/api/index.js` - 定义`getKnowledgeArticles()`接口方法
 - `modules/qimen/components/ArticleCard.vue` - 知识文章卡片组件
 
@@ -3997,7 +4007,7 @@ GET /api/knowledge/articles?category=入门
 - 所属模块：系统模块
 - 接口描述：获取系统配置信息（轮播图、版本号、联系方式等）
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面1 - 首页（`modules/system/pages/index.vue`）
+- 调用页面：页面1 - 首页（`pages/index/index.vue`）
 
 **请求参数**
 
@@ -4041,7 +4051,7 @@ GET /api/system/config
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/system/pages/index.vue`）：
+1. **前端发起请求**（`pages/index/index.vue`）：
    - 页面加载时（`onLoad`）调用`getSystemConfig()`
    - 获取轮播图、版本号等配置
 
@@ -4080,7 +4090,7 @@ GET /api/system/config
    **步骤5：返回结果**
    - 返回配置字典
 
-4. **前端处理响应**（`modules/system/pages/index.vue`）：
+4. **前端处理响应**（`pages/index/index.vue`）：
    - 成功：
      - 渲染轮播图（使用`Banner.vue`组件）
      - 存储配置到Pinia store：`systemStore.setConfig(data)`
@@ -4090,7 +4100,7 @@ GET /api/system/config
 **涉及文件清单**
 
 前端文件：
-- `modules/system/pages/index.vue` - 首页
+- `pages/index/index.vue` - 首页
 - `modules/system/api/index.js` - 定义`getSystemConfig()`接口方法
 - `modules/system/components/Banner.vue` - 轮播图组件
 - `modules/system/store/index.js` - 系统状态管理
@@ -4113,7 +4123,7 @@ GET /api/system/config
 - 所属模块：系统模块
 - 接口描述：获取帮助文档（使用帮助、常见问题）
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面12 - 关于/帮助页（`modules/system/pages/about.vue`）
+- 调用页面：页面12 - 关于/帮助页（`pages/about/index.vue`）
 
 **请求参数**
 
@@ -4156,7 +4166,7 @@ GET /api/system/help
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/system/pages/about.vue`）：
+1. **前端发起请求**（`pages/about/index.vue`）：
    - 页面加载时调用`getHelpDoc()`
 
 2. **后端路由接收**（`app/modules/system/router.py`）：
@@ -4172,7 +4182,7 @@ GET /api/system/help
    **步骤2：返回结果**
    - 返回帮助文档数据（包含问题列表）
 
-4. **前端处理响应**（`modules/system/pages/about.vue`）：
+4. **前端处理响应**（`pages/about/index.vue`）：
    - 成功：
      - 渲染帮助折叠面板（使用`HelpAccordion.vue`组件）
      - 默认全部折叠
@@ -4183,7 +4193,7 @@ GET /api/system/help
 **涉及文件清单**
 
 前端文件：
-- `modules/system/pages/about.vue` - 关于/帮助页
+- `pages/about/index.vue` - 关于/帮助页
 - `modules/system/api/index.js` - 定义`getHelpDoc()`接口方法
 - `modules/system/components/HelpAccordion.vue` - 帮助折叠面板组件
 
@@ -4205,7 +4215,7 @@ GET /api/system/help
 - 所属模块：系统模块
 - 接口描述：提交用户意见反馈
 - 认证要求：无需认证（支持匿名反馈）
-- 调用页面：页面9 - 个人中心页（`modules/user/pages/profile.vue`）
+- 调用页面：页面9 - 个人中心页（`pages/profile/index.vue`）
 
 **请求参数**
 
@@ -4253,7 +4263,7 @@ Body：
 
 **业务逻辑实现**
 
-1. **前端触发**（`modules/user/pages/profile.vue`）：
+1. **前端触发**（`pages/profile/index.vue`）：
    - 点击"意见反馈"
    - 弹出反馈弹窗（使用`Modal.vue`）
    - 输入反馈内容和联系方式（可选）
@@ -4287,7 +4297,7 @@ Body：
    **步骤3：返回结果**
    - 返回反馈ID和创建时间
 
-4. **前端处理响应**（`modules/user/pages/profile.vue`）：
+4. **前端处理响应**（`pages/profile/index.vue`）：
    - 提交成功：
      - 关闭反馈弹窗
      - 显示成功提示："感谢您的反馈"
@@ -4298,7 +4308,7 @@ Body：
 **涉及文件清单**
 
 前端文件：
-- `modules/user/pages/profile.vue` - 个人中心页，意见反馈入口
+- `pages/profile/index.vue` - 个人中心页，意见反馈入口
 - `modules/system/api/index.js` - 定义`submitFeedback()`接口方法
 - `common/components/Modal.vue` - 反馈弹窗组件
 
@@ -4322,7 +4332,7 @@ Body：
 - 所属模块：系统模块
 - 接口描述：获取系统公告列表（最多返回3条最新公告）
 - 认证要求：无需认证（公开接口）
-- 调用页面：页面1 - 首页（`modules/system/pages/index.vue`）
+- 调用页面：页面1 - 首页（`pages/index/index.vue`）
 
 **请求参数**
 
@@ -4368,7 +4378,7 @@ GET /api/system/announcements
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/system/pages/index.vue`）：
+1. **前端发起请求**（`pages/index/index.vue`）：
    - 页面加载时调用`getAnnouncements()`
 
 2. **后端路由接收**（`app/modules/system/router.py`）：
@@ -4390,7 +4400,7 @@ GET /api/system/announcements
    **步骤2：返回结果**
    - 返回公告列表（最多3条）
 
-4. **前端处理响应**（`modules/system/pages/index.vue`）：
+4. **前端处理响应**（`pages/index/index.vue`）：
    - 成功：
      - 渲染公告滚动条（使用`AnnouncementBar.vue`组件）
      - 文字从右向左滚动
@@ -4401,7 +4411,7 @@ GET /api/system/announcements
 **涉及文件清单**
 
 前端文件：
-- `modules/system/pages/index.vue` - 首页
+- `pages/index/index.vue` - 首页
 - `modules/system/api/index.js` - 定义`getAnnouncements()`接口方法
 - `modules/system/components/AnnouncementBar.vue` - 公告滚动条组件
 
@@ -4452,7 +4462,7 @@ GET /api/system/statistics
 
 **业务逻辑实现**
 
-1. **前端发起请求**（`modules/system/pages/index.vue`）：
+1. **前端发起请求**（`pages/index/index.vue`）：
    - 页面加载时调用`getStatistics()`（可选）
 
 2. **后端路由接收**（`app/modules/system/router.py`）：
@@ -4480,7 +4490,7 @@ GET /api/system/statistics
    **步骤5：返回结果**
    - 返回统计数据
 
-4. **前端处理响应**（`modules/system/pages/index.vue`）：
+4. **前端处理响应**（`pages/index/index.vue`）：
    - 成功：
      - 显示统计数据（可选）
    - 失败：
@@ -4489,7 +4499,7 @@ GET /api/system/statistics
 **涉及文件清单**
 
 前端文件：
-- `modules/system/pages/index.vue` - 首页（可选展示）
+- `pages/index/index.vue` - 首页（可选展示）
 - `modules/system/api/index.js` - 定义`getStatistics()`接口方法
 
 后端文件：
@@ -4915,7 +4925,7 @@ uni.addInterceptor('request', {
       removeToken();
       uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
       setTimeout(() => {
-        uni.navigateTo({ url: '/modules/user/pages/login' });
+        uni.navigateTo({ url: '/pages/login/index' });
       }, 1500);
       return Promise.reject(new Error('未认证'));
     }
@@ -4976,12 +4986,12 @@ uni.addInterceptor('request', {
 **页面错误处理示例**：
 
 ```javascript
-// modules/user/pages/login.vue
+// pages/login/index.vue
 const handleLogin = async () => {
   try {
     const data = await login(username.value, password.value);
     setToken(data.token);
-    uni.navigateTo({ url: '/modules/system/pages/index' });
+    uni.navigateTo({ url: '/pages/index/index' });
   } catch (error) {
     // 错误已在拦截器中显示Toast，这里无需额外处理
     console.error('登录失败:', error);

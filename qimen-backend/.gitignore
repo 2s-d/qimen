@@ -1,0 +1,20 @@
+# 文档引用：PROJECT_SPEC.md - 1622行
+# Git忽略文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+venv/
+env/
+ENV/
+logs/
+models/*.gguf
+data/qimen.db
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/

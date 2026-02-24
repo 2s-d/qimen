@@ -1,0 +1,131 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/register/index",
+			"style": {
+				"navigationBarTitleText": "注册",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/qimen-input/index",
+			"style": {
+				"navigationBarTitleText": "奇门起盘",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/qimen-plate/index",
+			"style": {
+				"navigationBarTitleText": "盘面展示",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/qimen-result/index",
+			"style": {
+				"navigationBarTitleText": "运势解读",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/history-list/index",
+			"style": {
+				"navigationBarTitleText": "历史记录",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/history-detail/index",
+			"style": {
+				"navigationBarTitleText": "历史详情",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/profile/index",
+			"style": {
+				"navigationBarTitleText": "个人中心"
+			}
+		},
+		{
+			"path": "pages/calendar/index",
+			"style": {
+				"navigationBarTitleText": "万年历",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/knowledge/index",
+			"style": {
+				"navigationBarTitleText": "基础知识",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/ai-chat/index",
+			"style": {
+				"navigationBarTitleText": "问小奇",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/about/index",
+			"style": {
+				"navigationBarTitleText": "关于",
+				"navigationStyle": "custom"
+			}
+		}
+	],
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#667eea",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/icons/tabbar/home.png",
+				"selectedIconPath": "static/icons/tabbar/home-active.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/qimen-input/index",
+				"iconPath": "static/icons/tabbar/qipan.png",
+				"selectedIconPath": "static/icons/tabbar/qipan-active.png",
+				"text": "起盘"
+			},
+			{
+				"pagePath": "pages/history-list/index",
+				"iconPath": "static/icons/tabbar/history.png",
+				"selectedIconPath": "static/icons/tabbar/history-active.png",
+				"text": "历史"
+			},
+			{
+				"pagePath": "pages/profile/index",
+				"iconPath": "static/icons/tabbar/profile.png",
+				"selectedIconPath": "static/icons/tabbar/profile-active.png",
+				"text": "我的"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "奇门遁甲",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	}
+}

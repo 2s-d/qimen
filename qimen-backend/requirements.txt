@@ -1,0 +1,21 @@
+# 文档引用：PROJECT_SPEC.md - 1623行
+# 生产依赖配置
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy>=2.0.25  # Python 3.13 兼容性要求 >=2.0.25
+pydantic>=2.5.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+# kinqimen 可选：Python 3.13 下 ephem 编译可能失败，安装失败时后端使用内置简化算法
+# pip install kinqimen  # 可选，若成功则使用库计算
+sxtwl==1.1.0
+alembic==1.12.1
+
+# 测试依赖
+pytest==7.4.3
+requests==2.31.0
+
+# AI 小模型推理（本地 GGUF）
+# 注意：llama-cpp-python 在部分 Windows / Python 版本下可能需要编译环境，安装失败时可改用 Ollama 兜底方案（无需该依赖）
+# llama-cpp-python==0.2.78
