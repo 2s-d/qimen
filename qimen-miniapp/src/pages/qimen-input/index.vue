@@ -143,7 +143,24 @@ const goLogin = () => {
 }
 
 const handleBack = () => {
-  uni.navigateBack({ fail: () => uni.switchTab({ url: '/pages/index/index' }) })
+  // 兼容 tabbar 根页：如果没有可返回的历史，则回到首页 tab
+  try {
+    // H5 / 小程序环境均支持 getCurrentPages
+    // eslint-disable-next-line no-undef
+    const pages = getCurrentPages && getCurrentPages()
+    const len = Array.isArray(pages) ? pages.length : 0
+    if (!len || len <= 1) {
+      uni.switchTab({ url: '/pages/index/index' })
+      return
+    }
+  } catch {
+    // ignore，走兜底逻辑
+  }
+  uni.navigateBack({
+    fail() {
+      uni.switchTab({ url: '/pages/index/index' })
+    }
+  })
 }
 
 const handleDateChange = (e: any) => {

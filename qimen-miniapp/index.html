@@ -9,12 +9,115 @@
         '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
         (coverSupport ? ', viewport-fit=cover' : '') + '" />')
     </script>
-    <title></title>
+    <style>
+      /* H5 “手机边框预览”模式：使用 iframe 模拟真实手机视口，避免篡改应用布局导致各种偏差 */
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: #ffffff;
+      }
+
+      body.phone-preview-mode {
+        background: #f3f4f6; /* 浅灰预览区 */
+      }
+
+      .phone-preview {
+        min-height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      .phone-frame {
+        width: min(390px, calc(100vw - 48px));
+        aspect-ratio: 390 / 844;
+        background: #111827; /* 外壳 */
+        border-radius: 34px;
+        padding: 12px; /* 外壳边框厚度 */
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      .phone-camera {
+        position: absolute;
+        top: 18px;
+        left: 50%;
+        width: 12px;
+        height: 12px;
+        transform: translateX(-50%);
+        border-radius: 50%;
+        background: #0b1220;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .phone-screen {
+        width: 100%;
+        height: 100%;
+        border-radius: 22px; /* 外壳圆角 - padding */
+        overflow: hidden;
+        background: #ffffff;
+        position: relative;
+        box-sizing: border-box;
+      }
+
+      .phone-iframe {
+        border: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+    </style>
     <!--preload-links-->
     <!--app-context-->
   </head>
   <body>
-    <div id="app"><!--app-html--></div>
-    <script type="module" src="/src/main.ts"></script>
+    <script>
+      (function () {
+        var params = new URLSearchParams(location.search)
+        var full = params.get('full')
+
+        // 默认：手机边框预览（iframe 方式，尽量还原 F12 设备模式的“真实视口”行为）
+        // full=1：恢复原始全屏 H5（用于开发调试）
+        if (full !== '1') {
+          window.__PHONE_PREVIEW_ONLY__ = true
+          document.body.classList.add('phone-preview-mode')
+          document.title = '奇门遁甲'
+          // iframe 内加载同一地址，但强制 full=1，避免递归套娃
+          params.set('full', '1')
+          var search = params.toString()
+          var src = location.pathname + (search ? ('?' + search) : '') + location.hash
+
+          var wrap = document.createElement('div')
+          wrap.className = 'phone-preview'
+          wrap.innerHTML =
+            '<div class="phone-frame">' +
+            '  <div class="phone-camera"></div>' +
+            '  <div class="phone-screen">' +
+            '    <iframe class="phone-iframe" allow="clipboard-read; clipboard-write" referrerpolicy="no-referrer"></iframe>' +
+            '  </div>' +
+            '</div>'
+
+          document.body.appendChild(wrap)
+          var iframe = wrap.querySelector('iframe')
+          iframe.src = src
+          return
+        }
+      })()
+    </script>
+    <div id="app"></div>
+    <script type="module">
+      // 使用可被构建工具处理的标准入口导入，避免 dist 环境继续请求 /src/main.ts
+      if (!window.__PHONE_PREVIEW_ONLY__) {
+        import('/src/main.ts')
+      }
+    </script>
   </body>
 </html>

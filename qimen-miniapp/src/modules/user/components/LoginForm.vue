@@ -35,6 +35,10 @@
 
     <button class="login-btn" @click="handleSubmit">登录</button>
 
+    <view class="quick-fill">
+      <text class="quick-fill-btn" @click="fillTestAccount">测试账密一键填充</text>
+    </view>
+
     <view class="bottom-links">
       <text class="link" @click="emit('forgot')">忘记密码？</text>
       <text class="divider">|</text>
@@ -55,6 +59,12 @@ const emit = defineEmits<{
 const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
+
+const fillTestAccount = () => {
+  username.value = 'a12345'
+  password.value = 'a12345'
+  showPassword.value = true
+}
 
 const handleSubmit = () => {
   emit('submit', { username: username.value, password: password.value })
@@ -84,6 +94,33 @@ const handleSubmit = () => {
   font-weight: bold;
   color: #333;
   margin-bottom: 100rpx;
+}
+
+.quick-fill {
+  margin-top: 24rpx;
+  text-align: center;
+}
+
+.quick-fill-btn {
+  display: inline-block;
+  font-size: 26rpx;
+  color: #2e7d32;
+  padding: 14rpx 22rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(46, 125, 50, 0.28);
+  box-shadow:
+    0 10rpx 26rpx rgba(46, 125, 50, 0.12),
+    0 0 0 1px rgba(46, 125, 50, 0.06) inset;
+  transition: box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.quick-fill-btn:hover {
+  border-color: rgba(244, 67, 54, 0.35);
+  box-shadow:
+    0 10rpx 26rpx rgba(46, 125, 50, 0.10),
+    0 0 0 1px rgba(46, 125, 50, 0.04) inset,
+    0 0 22rpx rgba(244, 67, 54, 0.35);
 }
 
 .form-group {
