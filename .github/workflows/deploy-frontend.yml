@@ -1,0 +1,63 @@
+name: Deploy qimen-miniapp H5 Frontend to Server
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'qimen-miniapp/**'
+      - '.github/workflows/deploy-frontend.yml'
+
+jobs:
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install frontend dependencies
+        working-directory: ./qimen-miniapp
+        run: npm install
+      
+      - name: Build frontend H5
+        working-directory: ./qimen-miniapp
+        run: npm run build:h5
+        env:
+          NODE_ENV: production
+      
+      # uni-app H5 构建产物在 dist/build/h5 目录
+      # 参考 portfolio 项目，打包时进入该目录，确保解压后文件直接在 web root
+      - name: Pack frontend dist (flat for web root)
+        run: cd qimen-miniapp/dist/build/h5 && tar czf ../../../../qimen-frontend-dist.tar.gz .
+      
+      - name: Deploy frontend tarball to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "qimen-frontend-dist.tar.gz"
+          target: "/var/www/qimen/"
+          overwrite: true
+      
+      - name: Extract frontend on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          command_timeout: 5m
+          script: |
+            set -e
+            cd /var/www/qimen
+            tar xzf qimen-frontend-dist.tar.gz
+            rm -f qimen-frontend-dist.tar.gz
+            echo "✅ qimen-miniapp 前端部署完成: $(date)"
