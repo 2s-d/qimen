@@ -90,6 +90,11 @@
           window.__PHONE_PREVIEW_ONLY__ = true
           document.body.classList.add('phone-preview-mode')
           document.title = '奇门遁甲'
+          // 动态添加 favicon
+          var link = document.createElement('link')
+          link.rel = 'icon'
+          link.href = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>☯</text></svg>"
+          document.head.appendChild(link)
           // iframe 内加载同一地址，但强制 full=1，避免递归套娃
           params.set('full', '1')
           var search = params.toString()
